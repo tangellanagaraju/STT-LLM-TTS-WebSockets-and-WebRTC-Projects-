@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Video Call</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-color);
+            background-image: radial-gradient(circle at top right, #1e1b4b, transparent 40%),
+                              radial-gradient(circle at bottom left, #064e3b, transparent 40%);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        h1, h2, h3 { margin-top: 0; }
+
+        /* Inputs and Buttons */
+        input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: var(--success-hover); transform: translateY(-2px); }
+
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: var(--danger); transform: translateY(-2px); }
+
+        /* Video Section */
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 1rem;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-label {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Status Panels */
+        .status-panel {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .status-panel.active {
+            display: block;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+
+        /* Layout modifications */
+        .app-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .app-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        #callScreen {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="app-header">
+        <h1>Vortex WebRTC Chat</h1>
+        <p style="color: var(--text-muted);">Real-time peer-to-peer video communication</p>
+    </div>
+
+    <!-- Login Area -->
+    <div id="loginSection" class="glass-card">
+        <h2>Enter Your Username</h2>
+        <input type="text" id="usernameInput" placeholder="e.g. Alice">
+        <button class="btn-primary" onclick="login()">Connect to Server</button>
+    </div>
+
+    <!-- Call Area -->
+    <div id="callScreen">
+        <div class="glass-card status-panel active" id="call">
+            <h2>Start a call</h2>
+            <input type="text" id="callNameInput" placeholder="Enter username to call...">
+            <button class="btn-primary" onclick="initiateCall()">Call User</button>
+        </div>
+
+        <div class="glass-card status-panel" id="calling">
+            <h2 class="animate-pulse">Calling <span id="otherUserNameCA">...</span></h2>
+            <p style="color: var(--text-muted);">Waiting for them to answer...</p>
+        </div>
+
+        <div class="glass-card status-panel" id="answer">
+            <h2>Incoming Call</h2>
+            <p><strong id="callerName">Someone</strong> is calling you!</p>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn-success" onclick="acceptCall()">Accept</button>
+            </div>
+        </div>
+
+        <div class="video-grid">
+            <div class="video-container">
+                <video id="localVideo" autoplay muted playsinline></video>
+                <div class="video-label">You</div>
+            </div>
+            <div class="video-container">
+                <video id="remoteVideo" autoplay playsinline></video>
+                <div class="video-label">Remote</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let myName;
+    let otherUser;
+    let remoteRTCMessage;
+
+    let callSocket;
+    let peerConnection;
+    let localStream;
+    let remoteStream;
+
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+
+    let iceCandidatesFromCaller = [];
+
+    let pcConfig = {
+        "iceServers":  [
+            {
+                "urls":  "stun:stun.relay.metered.ca:80"
+            },
+            {
+                "urls":  "turn:standard.relay.metered.ca:80",
+                "username":  "1cde89d531344d6fa4589774",
+                "credential":  "YpIV2p/YRsl7/7Wd"
+            },
+            {
+                "urls":  "turn:standard.relay.metered.ca:80?transport=tcp",
+                "username":  "1cde89d531344d6fa4589774",
+                "credential":  "YpIV2p/YRsl7/7Wd"
+            },
+            {
+                "urls":  "turn:standard.relay.metered.ca:443",
+                "username":  "1cde89d531344d6fa4589774",
+                "credential":  "YpIV2p/YRsl7/7Wd"
+            },
+            {
+                "urls":  "turns:standard.relay.metered.ca:443?transport=tcp",
+                "username":  "1cde89d531344d6fa4589774",
+                "credential":  "YpIV2p/YRsl7/7Wd"
+            }
+        ]
+    };
+
+    function login() {
+        myName = document.getElementById('usernameInput').value.trim();
+        if(!myName) { alert("Please enter a username."); return; }
+
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('callScreen').style.display = 'block';
+
+        connectSocket();
+        beReady();
+    }
+
+    function connectSocket() {
+        let ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        callSocket = new WebSocket(
+            ws_scheme + '://'
+            + window.location.host
+            + '/ws/call/'
+        );
+
+        callSocket.onopen = event => {
+            console.log("WebSocket connected!");
+            callSocket.send(JSON.stringify({
+                type: 'login',
+                data: {
+                    name: myName
+                }
+            }));
+        }
+
+        callSocket.onmessage = (e) => {
+            let response = JSON.parse(e.data);
+            let type = response.type;
+
+            if(type == 'connection') {
+                console.log(response.data.message)
+            }
+
+            if(type == 'call_received') {
+                onNewCall(response.data)
+            }
+
+            if(type == 'call_answered') {
+                onCallAnswered(response.data);
+            }
+
+            if(type == 'ICEcandidate') {
+                onICECandidate(response.data);
+            }
+        }
+    }
+
+    const onNewCall = (data) => {
+        otherUser = data.caller;
+        remoteRTCMessage = data.rtcMessage;
+
+        document.getElementById("callerName").innerHTML = otherUser;
+        showPanel('answer');
+    }
+
+    const onCallAnswered = (data) => {
+        remoteRTCMessage = data.rtcMessage;
+        peerConnection.setRemoteDescription(new RTCSessionDescription(remoteRTCMessage));
+
+        console.log("Call Started. They Answered");
+        callProgress();
+    }
+
+    const onICECandidate = (data) => {
+        console.log("GOT ICE candidate");
+        let message = data.rtcMessage;
+
+        let candidate = new RTCIceCandidate({
+            sdpMLineIndex: message.label,
+            candidate: message.candidate
+        });
+
+        if (peerConnection) {
+            console.log("ICE candidate Added");
+            peerConnection.addIceCandidate(candidate);
+        } else {
+            console.log("ICE candidate Pushed");
+            iceCandidatesFromCaller.push(candidate);
+        }
+    }
+
+    function initiateCall() {
+        let callName = document.getElementById('callNameInput').value.trim();
+        if(!callName) { alert("Please enter a user to call."); return; }
+        
+        otherUser = callName;
+        processCall(otherUser);
+    }
+
+    function acceptCall() {
+        processAccept();
+    }
+
+    function showPanel(panelId) {
+        document.querySelectorAll('.status-panel').forEach(p => p.classList.remove('active'));
+        if(panelId) {
+            document.getElementById(panelId).classList.add('active');
+        }
+    }
+
+    function sendCall(data) {
+        console.log("Send Call");
+        callSocket.send(JSON.stringify({
+            type: 'call',
+            data
+        }));
+
+        document.getElementById("otherUserNameCA").innerHTML = otherUser;
+        showPanel('calling');
+    }
+
+    function answerCall(data) {
+        callSocket.send(JSON.stringify({
+            type: 'answer_call',
+            data
+        }));
+        callProgress();
+    }
+
+    function sendICEcandidate(data) {
+        console.log("Send ICE candidate");
+        callSocket.send(JSON.stringify({
+            type: 'ICEcandidate',
+            data
+        }));
+    }
+
+    function callProgress() {
+        showPanel(null); // Hide all top panels, just show videos
+    }
+
+    // WebRTC Parts
+
+    function beReady() {
+        return navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: true
+        })
+        .then(stream => {
+            localStream = stream;
+            localVideo.srcObject = stream;
+            return true;
+        })
+        .catch(function (e) {
+            alert('getUserMedia() error: ' + e.name);
+        });
+    }
+
+    function createConnectionAndAddStream() {
+        createPeerConnection();
+        peerConnection.addStream(localStream);
+        return true;
+    }
+
+    function processCall(userName) {
+        createConnectionAndAddStream();
+        peerConnection.createOffer((sessionDescription) => {
+            peerConnection.setLocalDescription(sessionDescription);
+            sendCall({
+                name: userName,
+                rtcMessage: sessionDescription
+            })
+        }, (error) => {
+            console.log("Error creating offer", error);
+        });
+    }
+
+    function processAccept() {
+        createConnectionAndAddStream();
+        peerConnection.setRemoteDescription(new RTCSessionDescription(remoteRTCMessage));
+        
+        // Add pending ICE candidates
+        while(iceCandidatesFromCaller.length > 0) {
+            let candidate = iceCandidatesFromCaller.pop();
+            peerConnection.addIceCandidate(candidate);
+        }
+
+        peerConnection.createAnswer((sessionDescription) => {
+            peerConnection.setLocalDescription(sessionDescription);
+            answerCall({
+                caller: otherUser,
+                rtcMessage: sessionDescription
+            })
+        }, (error) => {
+            console.log("Error creating answer", error);
+        })
+    }
+
+    function createPeerConnection() {
+        try {
+            peerConnection = new RTCPeerConnection(pcConfig);
+            peerConnection.onicecandidate = handleIceCandidate;
+            peerConnection.onaddstream = handleRemoteStreamAdded;
+            peerConnection.onremovestream = handleRemoteStreamRemoved;
+            console.log('Created RTCPeerConnnection');
+        } catch (e) {
+            console.log('Failed to create PeerConnection, exception: ' + e.message);
+            alert('Cannot create RTCPeerConnection object.');
+        }
+    }
+
+    function handleIceCandidate(event) {
+        if (event.candidate) {
+            console.log("Local ICE candidate");
+            sendICEcandidate({
+                user: otherUser,
+                rtcMessage: {
+                    label: event.candidate.sdpMLineIndex,
+                    id: event.candidate.sdpMid,
+                    candidate: event.candidate.candidate
+                }
+            })
+        } else {
+            console.log('End of candidates.');
+        }
+    }
+
+    function handleRemoteStreamAdded(event) {
+        console.log('Remote stream added.');
+        remoteStream = event.stream;
+        remoteVideo.srcObject = remoteStream;
+    }
+
+    function handleRemoteStreamRemoved(event) {
+        console.log('Remote stream removed. Event: ', event);
+        remoteVideo.srcObject = null;
+    }
+</script>
+
+</body>
+</html>

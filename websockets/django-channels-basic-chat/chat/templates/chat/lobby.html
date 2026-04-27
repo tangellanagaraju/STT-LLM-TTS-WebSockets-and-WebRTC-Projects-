@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Chat Lobby</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --chat-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --bubble-bg: #334155;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 480px;
+            height: 85vh;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px 24px;
+            background: rgba(15, 23, 42, 0.7);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h1 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+        
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .messages::-webkit-scrollbar-thumb {
+            background: rgba(71, 85, 105, 0.6);
+            border-radius: 10px;
+        }
+
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .message-sent {
+            align-items: flex-end;
+        }
+
+        .message-received {
+            align-items: flex-start;
+        }
+
+        .sender-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            margin-left: 4px;
+            margin-right: 4px;
+        }
+
+        .message-bubble {
+            background: var(--bubble-bg);
+            padding: 14px 18px;
+            border-radius: 20px;
+            max-width: 85%;
+            animation: slideIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message-received .message-bubble {
+            border-bottom-left-radius: 4px;
+            background: linear-gradient(145deg, #334155 0%, #1e293b 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .message-sent .message-bubble {
+            border-bottom-right-radius: 4px;
+            background: linear-gradient(135deg, var(--accent) 0%, #4f46e5 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .message-bubble p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #f1f5f9;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .chat-input-container {
+            padding: 20px 24px;
+            background: rgba(15, 23, 42, 0.7);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 12px;
+            position: relative;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 20px;
+            border-radius: 100px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), inset 0 2px 4px rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
+        }
+
+        .send-btn:active {
+            transform: translateY(1px) scale(0.95);
+        }
+
+        .send-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transform: translateX(-1px) translateY(1px); /* optical adjustment */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1><div class="status-dot"></div> Live Room</h1>
+            <div class="status-indicator">
+                <span id="connection-status">Connecting...</span>
+            </div>
+        </div>
+
+        <div class="messages" id="messages">
+            <!-- Messages will appear here -->
+        </div>
+
+        <div class="chat-input-container">
+            <form id="form" class="chat-form">
+                <input type="text" name="message" class="chat-input" placeholder="Type a message..." autocomplete="off" required/>
+                <button type="submit" class="send-btn" aria-label="Send">
+                    <svg viewBox="0 0 24 24">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Generate a random username for this session 
+        const myUsername = 'User-' + Math.floor(1000 + Math.random() * 9000);
+        
+        let url = `ws://${window.location.host}/ws/socket-server/`;
+        const chatSocket = new WebSocket(url);
+        
+        const messagesContainer = document.getElementById('messages');
+        const statusText = document.getElementById('connection-status');
+        const statusDot = document.querySelector('.status-dot');
+
+        chatSocket.onopen = function(e) {
+            statusText.textContent = `Connected as ${myUsername}`;
+            statusDot.style.background = "#10b981";
+            statusDot.style.boxShadow = "0 0 12px #10b981";
+        };
+
+        chatSocket.onclose = function(e) {
+            statusText.textContent = "Disconnected";
+            statusDot.style.background = "#ef4444";
+            statusDot.style.boxShadow = "0 0 12px #ef4444";
+        };
+
+        chatSocket.onmessage = function(e){
+            let data = JSON.parse(e.data);
+            
+            if(data.type === 'chat'){
+                let isMe = data.sender === myUsername;
+                let bubbleClass = isMe ? 'message-sent' : 'message-received';
+                let senderLabel = isMe ? '' : `<span class="sender-name">${data.sender}</span>`;
+                
+                let messageHTML = `
+                    <div class="message-wrapper ${bubbleClass}">
+                        ${senderLabel}
+                        <div class="message-bubble">
+                            <p>${data.message}</p>
+                        </div>
+                    </div>
+                `;
+                messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        };
+
+        let form = document.getElementById('form');
+        form.addEventListener('submit', (e)=> {
+            e.preventDefault();
+            let messageInput = e.target.message;
+            let message = messageInput.value.trim();
+            
+            if (message && chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'sender': myUsername
+                }));
+                form.reset();
+            }
+            messageInput.focus();
+        });
+
+    </script>
+</body>
+</html>

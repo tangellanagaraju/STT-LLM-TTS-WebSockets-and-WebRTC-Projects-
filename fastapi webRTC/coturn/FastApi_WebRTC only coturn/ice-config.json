@@ -1,0 +1,12 @@
+{
+    "iceServers":  [
+                       {
+                           "urls":  [
+                                        "turn:localhost:3478",
+                                        "turn:localhost:3478?transport=tcp"
+                                    ],
+                           "username":  "<timestamp>:user",
+                           "credential":  "<computed-password>"
+                       }
+                   ]
+}

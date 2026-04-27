@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Voice Interface</title>
+    <!-- Use Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'voice_app/css/style.css' %}">
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <h1>AI Assistant</h1>
+            <p>Real-time conversational agent</p>
+        </header>
+
+        <main class="chat-container">
+            <div id="messages" class="messages-area">
+                <!-- Chat messages will appear here -->
+                <div class="message system-message">
+                    <span class="bubble">System ready. Press the microphone to speak.</span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="mic-btn" class="mic-button">
+                    <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" x2="12" y1="19" y2="22"/>
+                    </svg>
+                    <span id="btn-text">Start Speaking</span>
+                </button>
+            </div>
+            <div class="status-indicator">
+                <span id="socket-status">WS: Initializing...</span>
+                <span id="webrtc-status">ICE: Waiting...</span>
+            </div>
+        </main>
+    </div>
+
+    <!-- Inject JS -->
+    <script src="{% static 'voice_app/js/app.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  webrtc-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webrtc-fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - STUN_SERVER=stun:stun.l.google.com:19302
+      - HOST=0.0.0.0
+      - PORT=8000
+    volumes:
+      - ./app:/app/app
+    depends_on:
+      - coturn
+    restart: unless-stopped
+    networks:
+      - webrtc-network
+
+  coturn:
+    image: coturn/coturn:latest
+    container_name: coturn-server
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "5349:5349"
+      - "5349:5349/udp"
+    volumes:
+      - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
+    command: -c /etc/coturn/turnserver.conf --no-stdout-log --log-file=stdout --external-ip=localhost
+    restart: unless-stopped
+    networks:
+      - webrtc-network
+
+networks:
+  webrtc-network:
+    driver: bridge
