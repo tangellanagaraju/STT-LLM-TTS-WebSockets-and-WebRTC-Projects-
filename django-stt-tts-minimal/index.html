@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice AI Assistant</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 0.5rem;
+            background: #3b82f6;
+            color: white;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 1rem;
+            color: #94a3b8;
+        }
+        .visualizer {
+            width: 300px;
+            height: 100px;
+            background: #0f172a;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+        .bar {
+            width: 10px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 5px;
+            transition: height 0.1s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Voice AI</h1>
+        <div class="visualizer" id="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <button id="startBtn">Start Conversation</button>
+        <div id="status">Click start to begin...</div>
+    </div>
+
+    <script src="client.js"></script>
+</body>
+</html>

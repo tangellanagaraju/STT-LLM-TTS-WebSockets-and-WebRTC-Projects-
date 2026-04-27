@@ -1,39 +1,62 @@
-# WebRTC Projects Collection
+# 🌐 STT-LLM-TTS-WebSockets-and-WebRTC-Projects
 
-A comprehensive collection of WebRTC-based projects and experiments, ranging from basic peer-to-peer connections to advanced AI-powered voice agents.
+A professional collection of WebRTC and WebSocket implementations, featuring advanced AI-powered voice agents, real-time media streaming, and robust signaling systems. This repository serves as a comprehensive reference for building low-latency, real-time communication applications.
 
-## 🚀 Overview
+## 🚀 Key Features
 
-This repository contains multiple implementations of WebRTC (Web Real-Time Communication) and WebSocket technologies. These projects demonstrate various use cases such as video conferencing, real-time chat, and AI voice assistants with Speech-to-Text (STT) and Text-to-Speech (TTS) capabilities.
+- **AI Voice Assistants**: Integrated STT (Speech-to-Text), LLM (Large Language Model), and TTS (Text-to-Speech) pipelines.
+- **WebRTC Signaling**: Various signaling methods including Firebase, Socket.io, and FastAPI/WebSockets.
+- **Media Streaming**: Low-latency audio and video streaming with TURN/STUN server integration.
+- **Voice Activity Detection (VAD)**: Accurate voice detection for seamless AI interactions.
+- **Framework Support**: Implementations in FastAPI, Django, Express.js, and Vanilla JS.
 
 ## 📁 Repository Structure
 
-| Project Folder | Description |
-| :--- | :--- |
-| **[FirebaseRTC](./FirebaseRTC)** | WebRTC implementation using Firebase as the signaling server. |
-| **[WebRTC_Chat_Room-main](./WebRTC_Chat_Room-main)** | A real-time chat application built with WebRTC. |
-| **[calling](./calling)** | A basic audio/video calling application. |
-| **[fastapi webRTC](./fastapi%20webRTC)** | WebRTC implementations integrated with FastAPI backend. |
-| **[stt-agent-tts webrtc](./stt-agent-tts%20webrtc)** | Advanced AI voice assistant using WebRTC for low-latency audio streaming. |
-| **[stt-agent-tts websockets](./stt-agent-tts%20websockets)** | AI voice assistant implementation using WebSockets. |
-| **[vchatlive](./vchatlive)** | A live video chat application. |
-| **[webrtc](./webrtc)** | Core WebRTC experiments and demos. |
-| **[webrtc starter express](./webrtc%20starter%20express)** | Starter template for WebRTC using Node.js and Express. |
-| **[webrtc starter express - fastapi](./webrtc%20starter%20express%20-%20fastapi)** | A comparison/hybrid project using both Express and FastAPI. |
-| **[websockets](./websockets)** | Fundamental WebSocket communication examples. |
+| Project Folder | Description | Tech Stack |
+| :--- | :--- | :--- |
+| **[stt-agent-tts-webrtc-pro](./stt-agent-tts-webrtc-pro)** | **Latest** Professional AI Voice Agent with advanced VAD and high-fidelity streaming. | FastAPI, WebRTC, OpenAI |
+| **[stt-agent-tts-webrtc-vad](./stt-agent-tts-webrtc-vad)** | AI Voice Assistant featuring browser-based Voice Activity Detection. | FastAPI, WebRTC, VAD.js |
+| **[stt-agent-tts webrtc](./stt-agent-tts%20webrtc)** | Core WebRTC implementation for AI-driven voice conversations. | Django, WebRTC, OpenAI |
+| **[stt-agent-tts websockets](./stt-agent-tts%20websockets)** | Voice Assistant implementation utilizing standard WebSockets. | FastAPI, WebSockets |
+| **[django-stt-tts-minimal](./django-stt-tts-minimal)** | Lightweight, minimal setup for STT to TTS processing. | Django, Python |
+| **[fastapi webRTC](./fastapi%20webRTC)** | Production-ready FastAPI integration with Coturn support. | FastAPI, Coturn |
+| **[FirebaseRTC](./FirebaseRTC)** | Peer-to-peer WebRTC using Firebase as the signaling layer. | JavaScript, Firebase |
+| **[WebRTC_Chat_Room-main](./WebRTC_Chat_Room-main)** | Multi-user real-time chat application. | Node.js, WebRTC |
+| **[calling](./calling)** | Basic audio/video calling implementation. | Vanilla JS, WebRTC |
+| **[vchatlive](./vchatlive)** | Live video chat demo with room management. | Node.js, Socket.io |
+| **[webrtc starter express](./webrtc%20starter%20express)** | Starter template for Node.js/Express WebRTC applications. | Express, Socket.io |
+| **[websockets](./websockets)** | Fundamental examples of bidirectional communication. | Node.js, WS |
 
-## 🛠️ General Requirements
+## 🛠️ Setup & Installation
 
-Most projects in this repository require:
-- **Node.js** (for JavaScript/Express projects)
-- **Python 3.10+** (for FastAPI/AI projects)
-- **Modern Web Browser** (Chrome, Firefox, or Edge)
-- **Webcam & Microphone** (for media streaming demos)
+Each project contains its own `README.md` with specific installation instructions. Generally, you will need:
+
+### Prerequisites
+- **Node.js** (v16+)
+- **Python** (3.10+)
+- **OpenAI API Key** (for AI-powered projects)
+
+### Quick Start
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/tangellanagaraju/STT-LLM-TTS-WebSockets-and-WebRTC-Projects-.git
+   ```
+2. Navigate to a project folder:
+   ```bash
+   cd stt-agent-tts-webrtc-pro
+   ```
+3. Follow the instructions in the project's local `README.md`.
 
 ## 🔒 Security Note
 
-All sensitive information such as API keys, secrets, and `.env` files have been removed from this repository for security. Please ensure you create your own `.env` files based on the requirements of each individual project.
+All sensitive credentials (API keys, secrets, `.env` files) have been removed for security. 
+- Create a `.env` file in the relevant project directory.
+- Add your keys: `OPENAI_API_KEY=your_key_here`
+- Do **not** commit your `.env` files to version control.
 
 ## 📄 License
 
-This repository is for educational purposes. Feel free to use the code as a reference for your own WebRTC implementations.
+This repository is licensed under the MIT License. See individual folders for specific license details if applicable.
+
+---
+Created and maintained by [Tangella Nagaraju](https://github.com/tangellanagaraju).

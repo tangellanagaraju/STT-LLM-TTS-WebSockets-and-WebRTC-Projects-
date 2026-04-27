@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice AI Assistant</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 { margin-bottom: 2rem; font-weight: 700; letter-spacing: -0.5px; font-size: 2rem; }
+        
+        .main-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 auto 2rem;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+        .main-btn.active {
+            background: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+            transform: scale(1.1);
+        }
+        .main-btn svg { width: 32px; height: 32px; }
+
+        #status { color: #94a3b8; font-size: 1rem; margin-top: 1rem; font-weight: 500; }
+        
+        .indicator {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: -150px;
+            z-index: -1;
+            transition: all 0.5s;
+            transform: scale(0.5);
+            opacity: 0;
+        }
+        .indicator.active {
+            transform: scale(1.5);
+            opacity: 1;
+        }
+        .indicator.speaking {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1.4); opacity: 0.8; }
+            50% { transform: scale(1.6); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0.8; }
+        }
+
+        .transcript-box {
+            margin-top: 2rem;
+            text-align: left;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1rem;
+            border-radius: 1rem;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .user-text { color: #3b82f6; margin-bottom: 0.5rem; }
+        .ai-text { color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="indicator" id="indicator"></div>
+    <div class="container">
+        <h1>Voice Assistant</h1>
+        <button id="toggleBtn" class="main-btn">
+            <svg id="micIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+        </button>
+        <div id="status">Ready to connect</div>
+        <div class="transcript-box" id="transcriptBox">
+            <div id="transcript">Waiting for speech...</div>
+        </div>
+    </div>
+
+    {% load static %}
+    <script src="{% static 'core/client.js' %}"></script>
+</body>
+</html>

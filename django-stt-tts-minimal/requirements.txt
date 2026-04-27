@@ -1,0 +1,9 @@
+django
+channels[daphne]
+aiortc
+openai
+pydub
+numpy
+python-dotenv
+websockets
+av

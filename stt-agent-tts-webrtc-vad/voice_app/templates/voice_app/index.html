@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stellaris AI | Voice Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'voice_app/css/style.css' %}">
+    
+    <!-- VAD & ONNX Runtime -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.7/dist/bundle.min.js"></script>
+</head>
+<body>
+    <div class="glass-app">
+        <header class="app-header">
+            <div class="brand">
+                <div class="logo-orb"></div>
+                <h1>Voice Assistant</h1>
+            </div>
+            <div id="vad-indicator" class="status-pill">Ready</div>
+        </header>
+
+        <main id="messages" class="message-feed">
+            <div class="message system">
+                <div class="bubble">System Initialized. High-quality VAD active for clear interaction.</div>
+            </div>
+        </main>
+
+        <section class="controls">
+            <button id="mic-btn" class="neuro-btn">
+                <svg class="mic-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                    <line x1="12" x2="12" y1="19" y2="22" />
+                </svg>
+            </button>
+            <span id="btn-text" class="btn-label">Start Session</span>
+            
+            <div class="tech-stats">
+                <span id="socket-status">WS: OFFLINE</span>
+                <span id="webrtc-status">RTC: IDLE</span>
+            </div>
+        </section>
+    </div>
+
+    <script src="{% static 'voice_app/js/app.js' %}"></script>
+</body>
+</html>

@@ -43,7 +43,7 @@ async def ice_config(request: Request):
     stun_server = os.getenv("STUN_SERVER", "stun:stun.l.google.com:19302")
     
     # Credentials for local Coturn
-    turn_secret = "Some-Really-Long-Str0ng-password-Secret"
+    turn_secret = os.getenv("TURN_SECRET", "Some-Really-Long-Str0ng-password-Secret")
     timestamp = int(time.time()) + 86400
     turn_username = f"{timestamp}:user"
     mac = hmac.new(turn_secret.encode('utf-8'), turn_username.encode('utf-8'), hashlib.sha1)
